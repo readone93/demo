@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+
+  frontend:
+    build: ./devops-bootcamp-linker-frontend
+    container_name: frontend_app
+    ports:
+      - "5000:3000"
+    environment:
+      NEXTAUTH_SECRET: changeme
+      NEXTAUTH_URL: http://62.171.177.16:5000
+      NEXT_PUBLIC_API_URL: http://backend:3001
+      CLOUDINARY_CLOUD_NAME: changeme
+      CLOUDINARY_API_KEY: changeme
+      CLOUDINARY_API_SECRET: changeme
+    depends_on:
+      - backend
+    restart: always
+
+  backend:
+    build: ./devops-bootcamp-linker-backend
+    container_name: backend_api
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://USER:PASSWORD@db:5432/DATABASE?schema=public
+      NEXTAUTH_SECRET: changeme
+      NEXTAUTH_URL: http://62.171.177.16:5000
+      CLOUDINARY_CLOUD_NAME: changeme
+      CLOUDINARY_API_KEY: changeme
+      CLOUDINARY_API_SECRET: changeme
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: USER
+      POSTGRES_PASSWORD: PASSWORD
+      POSTGRES_DB: DATABASE
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:
