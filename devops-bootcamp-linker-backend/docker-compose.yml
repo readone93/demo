@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: postgresql://USER:PASSWORD@db:5432/DATABASE?schema=public
+      PORT: 3001
+      NEXTAUTH_SECRET: changeme
+      NEXTAUTH_URL: http://localhost:3000
+      CLOUDINARY_CLOUD_NAME: changeme
+      CLOUDINARY_API_KEY: changeme
+      CLOUDINARY_API_SECRET: changeme
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: USER
+      POSTGRES_PASSWORD: PASSWORD
+      POSTGRES_DB: DATABASE
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
